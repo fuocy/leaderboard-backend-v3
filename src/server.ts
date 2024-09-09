@@ -1,4 +1,3 @@
-// src/server.ts
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
@@ -14,7 +13,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*", // Set your allowed origin here
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
@@ -32,7 +31,6 @@ app.use(cors());
 
 app.use(express.json());
 
-// Use the leaderboard routes
 app.use("/api/leaderboards", leaderboardRoutes);
 
 let players: any = {}; // Store all connected players
@@ -45,8 +43,6 @@ io.on("connection", (socket) => {
     const { game, username, metrics } = data;
     players[socket.id] = { game, username, metrics };
     io.emit("leaderboard-update", Object.values(players));
-
-    // io.emit("leaderboard-update", data);
     // Broadcast updated data to all clients
   });
 

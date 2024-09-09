@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import Leaderboard from "../models/Leaderboard";
-import Player from "../models/Player";
 
 export const createLeaderboard = async (req: Request, res: Response) => {
   const { game, name, metrics, sorting } = req.body;
