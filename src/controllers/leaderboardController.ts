@@ -22,3 +22,20 @@ export const getLeaderboardsByGame = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to retrieve leaderboards" });
   }
 };
+
+export const deleteLeaderboard = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    const deletedLeaderboard = await Leaderboard.findByIdAndDelete(id);
+    console.log(deletedLeaderboard);
+
+    if (!deletedLeaderboard) {
+      return res.status(404).json({ error: "Leaderboard not found" });
+    }
+
+    res.status(200).json({ message: "Leaderboard deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete leaderboard" });
+  }
+};

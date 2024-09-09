@@ -19,32 +19,41 @@ const io = new Server(server, {
   },
 });
 
-// app.use(cors());
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-app.options("*", cors());
+app.use(cors());
+// app.use(
+//   cors({
+//     origin: ["http://localhost:3000", "http://localhost:3001"],
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//     credentials: true,
+//   })
+// );
+// app.options("*", cors());
 
 app.use(express.json());
 
 // Use the leaderboard routes
 app.use("/api/leaderboards", leaderboardRoutes);
 
+let players: any = {}; // Store all connected players
+
 // Socket.io logic for real-time leaderboard updates
 io.on("connection", (socket) => {
   console.log("A player connected");
 
   socket.on("player-update", (data) => {
-    io.emit("leaderboard-update", data); // Broadcast updated data to all clients
+    const { game, username, metrics } = data;
+    players[socket.id] = { game, username, metrics };
+    io.emit("leaderboard-update", Object.values(players));
+
+    // io.emit("leaderboard-update", data);
+    // Broadcast updated data to all clients
   });
 
   socket.on("disconnect", () => {
     console.log("A player disconnected");
+    delete players[socket.id];
+    io.emit("leaderboard-update", Object.values(players));
   });
 });
 
